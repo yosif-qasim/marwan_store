@@ -2,7 +2,24 @@
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import ProductCard from '../components/ProductCard'
+export async function getStaticProps() {
+  // Initialize the Contentful client
+  const client = createClient({
+    space: process.env.CONTENTFUL_SPACE_ID,
+    accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
+  })
 
+  // Fetch entries of type 'product'
+  const res = await client.getEntries({ content_type: 'product' })
+
+  // Check if products were retrieved
+  const products = res.items || []
+
+  return {
+    props: { products }, // Pass products to the page component as props
+    revalidate: 1, // Optional: Enable ISR with revalidation every 1 second
+  }
+}
 export default function HomePage({ products = [] }) {  // Set default value to an empty array
   return (
     <div className="container">
